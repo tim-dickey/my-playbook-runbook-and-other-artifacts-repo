@@ -1,0 +1,47 @@
+name: Daily AI Summary
+
+on:
+  schedule:
+    # Runs at 8:05 AM CDT (13:05 UTC) every day
+    - cron: '5 13 * * *'
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  generate-and-commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Generate AI summary
+        env:
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+        run: python scripts/generate_daily_ai_summary.py
+
+      - name: Commit and push summary
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          DATE=$(date -u +%Y-%m-%d)
+          YEAR=$(date -u +%Y)
+          MONTH=$(date -u +%m)
+          FILE="daily-ai-summary/${YEAR}/${MONTH}/${DATE}.md"
+          if [ -f "$FILE" ]; then
+            git add "$FILE"
+            git diff --cached --quiet || git commit -m "feat: daily AI summary for ${DATE} [automated]"
+            git push
+          else
+            echo "No summary file found at $FILE — skipping commit."
+            exit 1
+          fi
