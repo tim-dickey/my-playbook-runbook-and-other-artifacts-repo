@@ -1,0 +1,54 @@
+# Option A — Copy/move ai-briefing-*.md from notes/ to daily-ai-summary/ on push
+name: Move AI Briefing to daily-ai-summary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "notes/ai-briefing-*.md"
+
+jobs:
+  move-briefing:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Identify new briefing files
+        id: find
+        run: |
+          FILES=$(git diff --name-only --diff-filter=A HEAD~1 HEAD \
+            | grep '^notes/ai-briefing-.*\.md$' || true)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Copy files to daily-ai-summary/
+        if: steps.find.outputs.files != ''
+        run: |
+          mkdir -p daily-ai-summary
+          for f in ${{ steps.find.outputs.files }}; do
+            filename=$(basename "$f")
+            cp "$f" "daily-ai-summary/$filename"
+            echo "Copied $f → daily-ai-summary/$filename"
+          done
+
+      - name: Remove originals from notes/ (makes it a true move)
+        if: steps.find.outputs.files != ''
+        run: |
+          for f in ${{ steps.find.outputs.files }}; do
+            git rm "$f"
+            echo "Removed $f from notes/"
+          done
+
+      - name: Commit and push
+        if: steps.find.outputs.files != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add daily-ai-summary/
+          git commit -m "chore: move AI briefing(s) to daily-ai-summary"
+          git push
