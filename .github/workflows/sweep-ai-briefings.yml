@@ -1,0 +1,44 @@
+# Option B — Nightly sweep: move ai-briefing-*.md from notes/ to daily-ai-summary/
+name: Nightly AI Briefing Sweep
+
+on:
+  schedule:
+    - cron: "0 4 * * *"   # 11 PM CDT (UTC-5) — well after the 8 AM briefing commit lands
+  workflow_dispatch:       # Manual trigger available from the Actions tab
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Move briefings from notes/ to daily-ai-summary/
+        run: |
+          mkdir -p daily-ai-summary
+          shopt -s nullglob
+          files=(notes/ai-briefing-*.md)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No briefing files found in notes/ — nothing to move."
+            exit 0
+          fi
+          for f in "${files[@]}"; do
+            dest="daily-ai-summary/$(basename "$f")"
+            mv "$f" "$dest"
+            echo "Moved $f → $dest"
+          done
+
+      - name: Commit and push if anything changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add daily-ai-summary/ notes/
+          if git diff --cached --quiet; then
+            echo "Nothing to commit — no briefings were moved."
+          else
+            git commit -m "chore: sweep AI briefings from notes/ to daily-ai-summary/"
+            git push
+          fi
