@@ -205,6 +205,70 @@ Defines how quality and compliance are checked?
 
 ---
 
+## Worked Example: Campaign Approval
+
+A campaign approval shows how the artifacts work together without giving the AI unchecked authority.
+
+### Business objective
+
+Launch a partner campaign that uses approved positioning, stays within budget, protects customer and company information, and does not publish unsupported claims.
+
+### Artifact-to-work mapping
+
+| Artifact | Example in the campaign process | Why it belongs there |
+|---|---|---|
+| Persistent instructions | “Do not publish external copy without the named business owner’s approval. Preserve claim sources and approval status.” | These are durable controls for all customer-facing work. |
+| Campaign brief / specification | Target audience, offer, campaign channels, budget, timeline, required approvals, prohibited claims, and acceptance criteria | This states the desired business outcome and constraints. |
+| Prompt | “Prepare an executive approval summary from the attached brief, draft copy, budget, and evidence register.” | It requests a specific artifact for this campaign. |
+| Claim-review skill | Extract claims, link evidence, identify approval gaps, and flag regulated or unsupported language | This is a reusable method for repeated campaign reviews. |
+| Agent | Reads approved campaign materials, runs the claim-review skill, prepares a decision packet, and records unresolved risks | The agent performs bounded preparation and validation work. |
+| Evaluation / checklist | Each claim has evidence, an owner, approval status, and an approved version; budget and required reviewers are confirmed | This makes campaign readiness observable and auditable. |
+| Human approval | Marketing owner, product owner, legal/compliance, finance, or executive sponsor approves within their authority | People retain accountability for commitments and external communications. |
+
+### Example workflow
+
+```text
+1. Marketing creates the campaign brief and provides draft assets.
+2. The agent reads standing instructions and the campaign brief.
+3. The agent uses the claim-review skill to produce an evidence and risk register.
+4. The agent prepares an approval packet: summary, draft assets, budget status,
+   claims requiring approval, open questions, and recommendation.
+5. Named reviewers approve, reject, or request changes.
+6. The agent records the decision and prepares only approved materials for publication.
+7. A final checklist confirms that the released version matches the approved version.
+```
+
+### Approval packet example
+
+```md
+# Campaign Approval Packet
+
+## Decision requested
+Approve, reject, or request changes to the partner campaign.
+
+## Confirmed facts
+- Target audience: [from approved brief]
+- Budget status: [within / outside approved limit]
+- Approved channels: [list]
+
+## Claims requiring review
+| Claim | Evidence source | Owner | Approval status | Risk / note |
+|---|---|---|---|---|
+| [Claim] | [Source] | [Owner] | Pending | Needs product validation |
+
+## Open questions
+- [Question requiring human judgment]
+
+## Recommendation
+- [Proceed only when stated requirements are satisfied]
+```
+
+### Control boundary
+
+The agent may summarize, compare, flag, and prepare. It must not silently approve claims, alter budget authority, invent evidence, or publish externally unless the process explicitly grants that permission and the required human approvals are recorded.
+
+---
+
 ## Common Harness Equivalents
 
 Different AI products use different names for persistent instruction artifacts. The purpose is similar: provide workspace or project context that an agent loads automatically or by convention.
