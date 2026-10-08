@@ -224,32 +224,83 @@ The **executive sponsor** owns the final go/no-go decision. Marketing, product, 
 | Product owner | Confirms product accuracy, availability, and substantiation for product-related statements. |
 | Finance owner | Confirms budget availability and compliance with approved spending authority. |
 | Legal/compliance owner | Reviews regulated, contractual, privacy, brand, and policy risks as applicable. |
+| Build-side owner | Confirms the staging implementation, instrumentation, controls, rollback plan, and operational readiness. |
 | Agent | Assembles evidence, checks readiness criteria, flags gaps, and produces a decision packet. |
+
+### What "safe to fail" means
+
+A **safe-to-fail experiment** is deliberately small, time-bounded, observable, and reversible. It is designed to learn about a campaign assumption without exposing the organization to unacceptable customer, financial, technical, brand, privacy, or regulatory risk.
+
+Safe to fail does **not** mean “free to ignore controls.” It means the team has constrained the experiment with a defined audience, limited spend, monitoring, stop conditions, a rollback path, and named owners who can intervene.
+
+### Minimum evidence for executive approval
+
+The executive sponsor should see evidence in five categories before authorizing a production campaign or a controlled market experiment:
+
+| Evidence category | Minimum evidence | Cross-functional owners |
+|---|---|---|
+| Hypothesis and success criteria | A falsifiable campaign hypothesis; target segment; primary metric; guardrail metrics; decision thresholds; and a documented next decision if results are positive, neutral, or negative | Marketing, product, executive sponsor |
+| A/B test results | Test design; sample definition; control and treatment; observed results; limitations; interpretation; and whether evidence supports the next action | Marketing, analytics, product |
+| Staging validation | Successful staging run using representative workflows and test data; evidence that links, tracking, integrations, consent paths, and customer journeys behave as intended | Build-side, marketing operations, product |
+| Safety and reversibility | Limited exposure; approved budget cap; monitoring; explicit stop conditions; rollback or pause procedure; and named responders | Build-side, marketing, finance, legal/compliance |
+| Approval and accountability | Required review statuses, open risks, unresolved decisions, and an explicit executive decision record | Executive sponsor and named reviewers |
+
+### Safe-to-fail experiment example
+
+```text
+Hypothesis:
+A revised partner message will increase qualified-demo requests for the defined
+segment without increasing opt-outs, complaints, or cost per qualified lead above
+agreed guardrails.
+
+Limited exposure:
+- A pre-approved, small audience segment.
+- A fixed test duration and spending cap.
+- Approved channels only.
+
+Stop conditions:
+- Privacy, security, legal, or brand-control failure.
+- Guardrail metric exceeds the agreed threshold.
+- Staging or production monitoring shows a material technical problem.
+
+Reversibility:
+- Pause campaign distribution.
+- Disable the treatment variant.
+- Revert approved landing-page and tracking changes.
+- Preserve test data, decision records, and incident evidence.
+```
 
 ### Artifact-to-work mapping
 
 | Artifact | Example in the campaign process | Why it belongs there |
 |---|---|---|
 | Persistent instructions | “Do not publish external copy without the executive sponsor’s recorded approval. Preserve claim sources and approval status.” | These are durable controls for all customer-facing work. |
-| Campaign brief / specification | Target audience, offer, campaign channels, budget, timeline, required approvals, prohibited claims, and acceptance criteria | This states the desired business outcome and constraints. |
-| Prompt | “Prepare an executive approval summary from the attached brief, draft copy, budget, and evidence register.” | It requests a specific artifact for this campaign. |
+| Campaign brief / specification | Target audience, offer, campaign channels, budget, timeline, test hypothesis, guardrails, stop conditions, required approvals, prohibited claims, and acceptance criteria | This states the desired business outcome and constraints. |
+| Prompt | “Prepare an executive approval summary from the attached brief, draft copy, staging validation, A/B test results, budget, and evidence register.” | It requests a specific artifact for this campaign. |
 | Claim-review skill | Extract claims, link evidence, identify approval gaps, and flag regulated or unsupported language | This is a reusable method for repeated campaign reviews. |
-| Agent | Reads approved campaign materials, runs the claim-review skill, prepares a decision packet, and records unresolved risks | The agent performs bounded preparation and validation work. |
-| Evaluation / checklist | Each claim has evidence, an owner, approval status, and an approved version; budget and required reviewers are confirmed | This makes campaign readiness observable and auditable. |
+| Experiment-readiness skill | Check hypothesis, audience limit, metrics, instrumentation, staging results, monitoring, stop conditions, rollback plan, and owner assignments | This is a reusable cross-functional method for safe-to-fail experiments. |
+| Agent | Reads approved campaign materials, runs applicable skills, prepares a decision packet, and records unresolved risks | The agent performs bounded preparation and validation work. |
+| Evaluation / checklist | Each claim has evidence, the staging run succeeded, A/B results and limitations are documented, stop conditions are testable, and required reviewers are confirmed | This makes campaign readiness observable and auditable. |
 | Final approval | Executive sponsor records approve, reject, or request-changes decision after prerequisite reviews | A named accountable person retains final decision authority. |
 
 ### Example workflow
 
 ```text
-1. Marketing creates the campaign brief and provides draft assets.
-2. The agent reads standing instructions and the campaign brief.
-3. The agent uses the claim-review skill to produce an evidence and risk register.
-4. The agent prepares an approval packet: summary, draft assets, budget status,
-   claims requiring approval, open questions, and recommendation.
-5. Marketing, product, finance, and legal/compliance provide required review input.
-6. The executive sponsor records the final approve, reject, or request-changes decision.
-7. The agent records the decision and prepares only approved materials for publication.
-8. A final checklist confirms that the released version matches the approved version.
+1. Marketing and product define the business hypothesis, audience, success metrics,
+   guardrails, budget cap, and decision thresholds.
+2. The build-side implements the limited experiment and required instrumentation in staging.
+3. Marketing operations and the build-side execute a staging run and record results.
+4. The team conducts the limited A/B test or other controlled experiment.
+5. The agent reads standing instructions and campaign evidence, then runs the
+   claim-review and experiment-readiness skills.
+6. The agent prepares an approval packet containing evidence, findings, limitations,
+   risks, stop conditions, rollback readiness, and a recommendation.
+7. Marketing, product, finance, legal/compliance, analytics, and the build-side
+   provide required review input.
+8. The executive sponsor records the final approve, reject, or request-changes decision.
+9. The agent records the decision and prepares only approved materials for publication.
+10. The team monitors the launch against guardrails and uses the documented pause or
+    rollback procedure if a stop condition is met.
 ```
 
 ### Approval packet example
@@ -258,18 +309,33 @@ The **executive sponsor** owns the final go/no-go decision. Marketing, product, 
 # Campaign Approval Packet
 
 ## Decision requested
-Executive sponsor: approve, reject, or request changes to the partner campaign.
+Executive sponsor: approve, reject, or request changes to the partner campaign or controlled experiment.
 
 ## Confirmed facts
-- Target audience: [from approved brief]
+- Target audience and exposure limit: [from approved brief]
 - Budget status: [within / outside approved limit]
 - Approved channels: [list]
+- Staging validation: [passed / failed / conditional]
+- Rollback readiness: [confirmed / gap]
+
+## Hypothesis and measures
+- Hypothesis: [falsifiable statement]
+- Primary success metric: [metric and threshold]
+- Guardrail metrics: [metrics and thresholds]
+- Test duration and decision date: [dates]
+
+## A/B test or experiment results
+| Measure | Control | Treatment | Interpretation | Limitation / next action |
+|---|---|---|---|---|
+| [Metric] | [Value] | [Value] | [Finding] | [Limitation or action] |
 
 ## Required-review status
 | Review area | Accountable reviewer | Status | Material finding |
 |---|---|---|---|
 | Marketing | [Name] | Pending | [Finding] |
 | Product | [Name] | Pending | [Finding] |
+| Analytics | [Name] | Pending | [Finding] |
+| Build-side / operations | [Name] | Pending | [Finding] |
 | Finance | [Name] | Pending | [Finding] |
 | Legal / compliance | [Name] | Pending | [Finding] |
 
@@ -277,6 +343,12 @@ Executive sponsor: approve, reject, or request changes to the partner campaign.
 | Claim | Evidence source | Owner | Approval status | Risk / note |
 |---|---|---|---|---|
 | [Claim] | [Source] | [Owner] | Pending | Needs product validation |
+
+## Safety controls
+- Exposure limit: [audience, duration, and budget cap]
+- Monitoring: [dashboards, alerting, and owners]
+- Stop conditions: [measurable triggers]
+- Pause / rollback procedure: [steps and owners]
 
 ## Open questions
 - [Question requiring human judgment]
@@ -292,7 +364,7 @@ Executive sponsor: approve, reject, or request changes to the partner campaign.
 
 ### Control boundary
 
-The agent may summarize, compare, flag, and prepare. It must not silently approve claims, alter budget authority, invent evidence, or publish externally unless the process explicitly grants that permission and the executive sponsor’s final approval plus all required prerequisite approvals are recorded.
+The agent may summarize, compare, flag, and prepare. It must not infer that A/B results prove a causal conclusion beyond the evidence, silently approve claims, alter budget authority, invent evidence, or publish externally unless the process explicitly grants that permission and the executive sponsor’s final approval plus all required prerequisite approvals are recorded.
 
 ---
 
