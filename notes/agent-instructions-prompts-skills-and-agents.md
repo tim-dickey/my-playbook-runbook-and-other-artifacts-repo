@@ -1,23 +1,20 @@
 # Agent Instructions, Prompts, Skills, and Agents
 
-## Why This Matters
+## Who This Is For
 
-Modern AI tools are often described with overlapping terms: *prompt*, *skill*, *agent*, *rule*, and *instruction file*. They can all be stored as Markdown, but they perform different jobs.
+This guide is for a **mixed audience**: business professionals who want to use AI responsibly in their daily work, and technical professionals who configure AI-enabled tools and workflows.
 
-For technical and business teams alike, the practical question is simple: **where should a piece of guidance live so the AI uses it consistently, appropriately, and safely?**
-
-This guide explains the relationship among these artifacts in plain business language. It applies whether someone is writing code, preparing a marketing plan, analyzing sales data, drafting a policy, or working in an IDE with an AI assistant.
+The terms *prompt*, *skill*, *agent*, *rule*, and *instruction file* are often used interchangeably. They can all be Markdown files, but they have different jobs. Understanding the distinction helps teams use AI consistently, explain it clearly, and establish sensible controls.
 
 ---
 
 ## The Short Version
 
-- A **prompt** tells an AI what to do for a particular request.
-- A **skill** is a reusable procedure that teaches an AI how to complete a recurring kind of work.
+- An **instruction file** establishes default operating expectations for a workspace or repository.
+- A **prompt** tells AI what to do for a particular request.
+- A **skill** is a reusable procedure for a recurring type of work.
 - An **agent** is the worker: an AI model operating with instructions, tools, files, and an execution loop.
-- An **instruction file** such as `AGENTS.md` or `CLAUDE.md` establishes default operating expectations for work in a repository or workspace.
-
-A useful shorthand is:
+- A **specification** defines the result wanted; an **evaluation** verifies whether the result meets the standard.
 
 > **Instructions set the operating context. Prompts make requests. Skills provide repeatable methods. Agents perform the work.**
 
@@ -25,59 +22,59 @@ A useful shorthand is:
 
 ## The Relationship at a Glance
 
-| Artifact | Primary purpose | Typical scope | Business analogy |
-|---|---|---|---|
-| `AGENTS.md`, `CLAUDE.md`, or equivalent | Establish default operating expectations | A repository, workspace, or directory | Employee handbook and operating policies |
-| Prompt | Request a specific result | One interaction or task | A work request or meeting brief |
-| Skill | Package a repeatable method | A recurring capability | A documented standard operating procedure |
-| Agent | Execute work using context, tools, and procedures | A goal or workstream | A team member with authorized tools and responsibilities |
-| Specification or brief | Define desired outcome and success criteria | A project or deliverable | Statement of work or campaign brief |
-| Evaluation or test | Check whether the work met expectations | A deliverable or workflow | Quality assurance checklist or acceptance test |
+| Artifact | Plain-language purpose | Typical scope | Business analogy | Technical analogy |
+|---|---|---|---|---|
+| `AGENTS.md`, `CLAUDE.md`, or equivalent | Set the normal rules for work | Workspace, repository, or directory | Operating policies | Repository-level instructions |
+| Prompt | Request a particular output | One task or interaction | Work request or meeting brief | A task message/template |
+| Skill | Standardize a recurring method | Repeatable capability | Standard operating procedure | A named workflow package |
+| Agent | Perform work using approved access and guidance | Goal or workstream | Digital worker | Model plus harness, tools, and loop |
+| Specification or brief | State desired outcome and constraints | Project or deliverable | Statement of work | Requirements / acceptance criteria |
+| Evaluation or test | Check quality and compliance | Deliverable or workflow | QA checklist / control | Tests, fixtures, rubric, or eval |
 
 ---
 
-## 1. Persistent Instruction Files: The Default Operating Context
+## 1. Persistent Instruction Files
 
-Files such as `AGENTS.md` and `CLAUDE.md` contain durable guidance that should apply to most work in a repository or workspace. They commonly define:
+Files such as `AGENTS.md` and `CLAUDE.md` contain durable guidance that should apply to most work in a repository or workspace. They are the **local operating manual** for an AI-enabled work environment.
 
-- How to build, test, validate, or publish work.
-- Naming, documentation, security, privacy, and quality conventions.
-- Which directories or systems require extra care.
-- What must happen before an agent claims a task is complete.
-- Limits on tool use, approvals, or changes to production systems.
+They commonly define:
 
-Think of these files as the **local operating manual**. They tell an AI how to behave before it receives a specific task.
-
-Example:
+- Required validation, review, or approval steps.
+- Naming, documentation, privacy, security, and quality conventions.
+- Business boundaries, such as when human approval is required.
+- Important source systems, directories, or data-handling restrictions.
+- The definition of “done” before work can be represented as complete.
 
 ```md
-# Repository Working Rules
+# Workspace Working Rules
 
-- Confirm facts from source material before writing customer-facing claims.
+- Confirm facts from source material before making customer-facing claims.
 - Do not change production configuration without human approval.
-- Run the documented validation checks before marking work complete.
-- Record material assumptions and unresolved questions.
+- Run documented validation checks before reporting work as complete.
+- Record material assumptions, risks, and unresolved questions.
 ```
 
-### Important caveat
+### What business colleagues should know
 
-These names are conventions, not universal laws. A file applies only if the AI tool or agent harness recognizes and loads it. The harness also determines instruction precedence and directory scope.
+This is where a team records enduring controls: approval requirements, language standards, privacy limits, evidence expectations, and escalation paths.
+
+### What technical colleagues should know
+
+The name alone does not make a file active. Each agent harness decides which instruction files it discovers, their precedence, and whether nested directories can override broader guidance.
 
 ---
 
-## 2. Prompts: A Focused Request
+## 2. Prompts: Focused Requests
 
-A prompt is a set of instructions supplied for a particular interaction. It can be a sentence typed into chat, a reusable Markdown template, or a programmatic message sent to a model.
+A prompt gives an AI instructions for a specific task. It may be typed into a chat, stored as a reusable Markdown template, or generated programmatically.
 
-A prompt should make the immediate outcome clear:
+A useful prompt specifies:
 
-- What needs to be produced?
-- Who is the audience?
-- What source material or constraints apply?
-- What format is required?
-- What must not be assumed or invented?
-
-Example: a one-time prompt for a marketing review.
+- The desired output.
+- The audience.
+- The allowed source material.
+- Important constraints and exclusions.
+- The output format.
 
 ```md
 # Campaign Review Prompt
@@ -88,22 +85,20 @@ Identify:
 - The intended customer segment.
 - Claims that need evidence or approval.
 - Risks to brand, privacy, or regulatory compliance.
-- The three most important decisions required from leadership.
+- The three decisions required from leadership.
 
-Do not invent performance data or customer approvals.
+Do not invent performance data, customer approvals, or legal conclusions.
 ```
 
-A prompt can be reused, but it is still primarily an **instruction payload**. It does not necessarily include automatic discovery, support files, tools, or a complete repeatable process.
+A prompt may be saved and reused, but it is primarily an **instruction payload**. It does not necessarily include discovery metadata, procedural assets, tools, or a complete repeatable process.
 
 ---
 
 ## 3. Skills: Repeatable Capability Packages
 
-A skill packages a reusable method for a repeatable type of work. It typically has a name, a description of when to use it, procedural guidance, output expectations, and optional supporting materials such as templates, reference documents, or scripts.
+A skill is a reusable method for a recurring kind of work. It normally has a name, a description of when to use it, step-by-step instructions, an expected output, and optional support materials such as templates, examples, references, or scripts.
 
 Think of a skill as a **standard operating procedure that an agent can select when the work matches the procedure**.
-
-Example structure:
 
 ```text
 skills/
@@ -116,12 +111,10 @@ skills/
         └── extract-claims.py
 ```
 
-Example `SKILL.md`:
-
 ```md
 ---
 name: customer-claim-review
-description: Review proposed customer-facing claims for evidence, risk, and approval needs.
+description: Review customer-facing claims for evidence, risk, and approval needs.
 ---
 
 # Customer Claim Review
@@ -129,124 +122,104 @@ description: Review proposed customer-facing claims for evidence, risk, and appr
 Use this skill when reviewing marketing, sales, product, or support content that makes factual claims.
 
 1. Extract each distinct claim.
-2. Identify the available evidence for that claim.
+2. Identify the evidence supporting it.
 3. Mark unsupported, ambiguous, or regulated claims.
-4. Recommend an owner and approval path for each material issue.
+4. Recommend an owner and approval path for material issues.
 5. Return results using the claim-evidence template.
 ```
 
-A skill is **not automatically an agent**. The skill tells an agent *how* to perform a capability; the agent is still the system that chooses or receives the skill, calls tools, and carries out the work.
+A skill is **not an autonomous agent**. It explains *how* to carry out a capability; an agent still selects or receives the skill, invokes tools, and carries out the work.
 
 ---
 
 ## 4. Agents: The Workers That Act
 
-An agent is an AI model operating within a harness: the surrounding environment that gives it instructions, context, tools, permissions, feedback loops, and often memory or state.
+An agent is an AI model operating inside a **harness**: the surrounding system that supplies instructions, context, tools, permissions, feedback loops, and potentially memory or state.
 
-An agent may:
-
-- Read files and repository instructions.
-- Select or load a relevant skill.
-- Use approved tools such as search, spreadsheets, source control, or test runners.
-- Ask for missing information or human approval.
-- Validate results and revise its work.
-- Hand work to a specialized subagent for independent review.
-
-A business-friendly analogy is a **digital worker**. Like a human worker, it needs a clear mandate, appropriate access, defined boundaries, and a way to verify that it completed the assignment correctly.
+An agent may read files, select a skill, use approved tools, ask for missing information, validate its results, and hand work to a specialized reviewer. The agent is therefore not just a document or a model; it is the working system that acts toward a goal.
 
 ```text
-Business goal
+Business goal or technical objective
   ↓
 Agent receives task and operating context
   ↓
 Agent selects a prompt or skill
   ↓
-Agent uses approved tools and source materials
+Agent uses approved tools and source material
   ↓
 Agent validates work and reports results
   ↓
-Human reviews decisions that require judgment or authority
+Human reviews decisions requiring authority or judgment
 ```
+
+### Shared operating principle
+
+Treat agents as **assistants with bounded authority**, not independent decision-makers. Agents can prepare, analyze, draft, validate, and flag. Accountable people approve commitments, financial actions, external communications, and consequential business decisions.
 
 ---
 
-## Roles: When They Belong in a Prompt or Skill
+## Roles: When They Help
 
-A role statement is useful only when it changes observable behavior. It should establish a decision lens, authority boundary, evidence standard, or output expectation.
-
-Good role statement:
+Add a role to a prompt or skill when it changes observable behavior: what the AI prioritizes, what evidence it requires, what it may decide, or what it must not do.
 
 ```md
 Act as an independent compliance reviewer.
-Your role is to identify evidence gaps and escalation needs.
+Identify evidence gaps and escalation needs.
 Do not rewrite the campaign or approve claims.
 ```
 
-Weak role statement:
+This role is useful because it defines a decision lens and a boundary. In contrast, “You are a helpful, world-class expert” rarely changes a meaningful action.
 
-```md
-You are a helpful, world-class expert.
-```
-
-The first version changes what the agent prioritizes and what it is allowed to do. The second mostly adds decoration.
-
-Use a role inside a prompt or skill when a focused perspective is required. For example:
-
-- A finance reviewer prioritizes traceability, variance, and approval authority.
-- A security reviewer prioritizes threats, access control, and evidence.
-- A sales-enablement reviewer prioritizes customer relevance, proof points, and objection handling.
-- An adversarial reviewer looks for weaknesses rather than simply improving a document.
+Common business roles include finance reviewer, security reviewer, sales-enablement reviewer, policy analyst, and adversarial reviewer. Common technical roles include architecture reviewer, test engineer, release manager, and incident analyst.
 
 ---
 
-## Where Instructions Belong
+## Where Guidance Belongs
 
-Place guidance at the **lowest scope that reliably owns it**.
+Place a piece of guidance at the **lowest scope that reliably owns it**.
 
 ```text
-Does it apply to nearly every task in this workspace?
+Applies to nearly every task in the workspace?
   → Persistent instruction file
 
-Does it apply to one requested output or one interaction?
+Applies to one request or interaction?
   → Prompt
 
-Does it define a recurring, named procedure that should be reusable?
+Defines a recurring, named method that should be reusable?
   → Skill
 
-Does it define the desired business outcome and acceptance criteria?
+Defines the desired business result and constraints?
   → Specification, brief, or requirements document
 
-Does it define how success is measured?
+Defines how quality and compliance are checked?
   → Evaluation, checklist, rubric, or test
 ```
 
-Examples:
-
-| Guidance | Recommended location | Why |
+| Example guidance | Best location | Reason |
 |---|---|---|
-| "Never publish external statements without human approval." | Persistent instruction file | It applies broadly and expresses an enduring control. |
-| "Turn this meeting transcript into executive decisions and action items." | Prompt | It is a specific request for a specific source. |
-| "Review every proposed public claim against evidence and approval rules." | Skill | It is a recurring, repeatable business process. |
-| "Launch a Q3 partner campaign with approved budget and messaging." | Specification or brief | It defines the target business outcome. |
-| "Every public claim must have a source, owner, and approval status." | Evaluation or checklist | It defines how quality is verified. |
+| “Never publish external statements without human approval.” | Persistent instruction file | Broad, durable business control |
+| “Turn this meeting transcript into executive decisions and action items.” | Prompt | A specific request against a specific source |
+| “Review every public claim against evidence and approval rules.” | Skill | A recurring, repeatable process |
+| “Launch a Q3 partner campaign within approved budget and messaging.” | Specification or brief | Defines the intended outcome and constraints |
+| “Every public claim needs a source, owner, and approval status.” | Evaluation or checklist | Defines how quality is verified |
 
 ---
 
 ## Common Harness Equivalents
 
-Different AI products use different names and file locations for persistent instructions. The underlying purpose is similar: provide project or workspace context that the agent loads automatically or by convention.
+Different AI products use different names for persistent instruction artifacts. The purpose is similar: provide workspace or project context that an agent loads automatically or by convention.
 
-| Agent or harness | Common persistent instruction artifact | Notes |
+| Agent or harness | Common persistent instruction artifact | Mixed-audience interpretation |
 |---|---|---|
-| OpenAI Codex | `AGENTS.md` | Supports repository and nested-directory instruction files. |
-| Claude Code | `CLAUDE.md` | Common project-level instruction convention. |
-| GitHub Copilot | `.github/copilot-instructions.md` and `AGENTS.md` | Supports repository guidance and more specialized instruction or agent definitions under `.github/`. |
-| Hermes Agent | `AGENTS.md` | Uses it as the primary project context file. |
-| OpenClaw | `AGENTS.md` | Operational workspace instructions; identity and memory may be held separately. |
-| Gemini CLI | `GEMINI.md` | Project or directory context file convention. |
-| Cursor | `.cursor/rules/*.mdc`, plus supported instruction files | Rules can be scoped or activated based on context. |
+| OpenAI Codex | `AGENTS.md` | Shared project operating guidance |
+| Claude Code | `CLAUDE.md` | Project-level working expectations |
+| GitHub Copilot | `.github/copilot-instructions.md` and `AGENTS.md` | Repository guidance, with optional specialized instructions and agents |
+| Hermes Agent | `AGENTS.md` | Primary project context |
+| OpenClaw | `AGENTS.md` | Operational workspace instructions; identity and memory may be separate |
+| Gemini CLI | `GEMINI.md` | Project or directory context |
+| Cursor | `.cursor/rules/*.mdc`, plus supported instruction files | Persistent instructions that can be scoped or context-activated |
 
-When a team supports several tools, a concise `AGENTS.md` can serve as a portable baseline. Tool-specific files should be thin extensions used only for features unique to that harness.
+For teams using several products, a concise `AGENTS.md` can be the portable baseline. Keep tool-specific files thin, and reserve them for capabilities unique to that tool.
 
 ---
 
@@ -254,7 +227,7 @@ When a team supports several tools, a concise `AGENTS.md` can serve as a portabl
 
 ```text
 repo/
-├── AGENTS.md                              # Shared, durable operating guidance
+├── AGENTS.md                              # Shared operating guidance
 ├── CLAUDE.md                              # Claude-specific extension, if needed
 ├── GEMINI.md                              # Gemini-specific extension, if needed
 ├── .github/
@@ -265,32 +238,33 @@ repo/
 │   └── rules/                             # Cursor activation-aware rules
 ├── prompts/                               # Focused request templates
 ├── skills/                                # Repeatable capability packages
-├── specs/                                 # Business outcomes and acceptance criteria
+├── specs/                                 # Outcomes and acceptance criteria
 ├── evals/                                 # Tests, rubrics, and quality checks
 └── docs/
     └── runbooks/                          # Human-readable operating procedures
 ```
 
-This organization separates four questions that otherwise become tangled:
+This structure separates four questions that otherwise become tangled:
 
-1. **How should the AI normally behave here?**
-2. **What do we want it to do right now?**
-3. **Which repeatable process should it use?**
-4. **How will we know the result is acceptable?**
+1. How should the AI normally behave here?
+2. What do we want it to do right now?
+3. Which repeatable process should it use?
+4. How will we know the result is acceptable?
 
 ---
 
-## Governance and Risk Controls
+## Governance Checklist
 
-For business-side use, the most important design choice is not the filename. It is the control model around AI work.
+Before adopting an AI workflow, business and technical owners should be able to answer these questions together:
 
-- Keep universal guardrails in persistent instructions.
-- Use roles to establish decision boundaries, not to create theatrical personas.
-- Require sources, assumptions, and uncertainty labels for consequential analysis.
-- Separate preparation from approval: an agent may draft, analyze, or flag; accountable people approve decisions, customer commitments, financial actions, and external communications.
-- Use skills for recurring work only after the team can describe the process, decision points, and expected output.
-- Create evaluations for high-impact work so the team can test behavior rather than relying on a persuasive demo.
-- Prefer small, composable skills over a single giant instruction document.
+- What is the agent allowed to read, write, change, or send?
+- What information is sensitive, regulated, proprietary, or customer-controlled?
+- Which tasks may be automated, and which require human approval?
+- What evidence must the agent cite or preserve?
+- How will the team detect incorrect, incomplete, or noncompliant work?
+- Who owns the skill, instruction file, and evaluation criteria as the process evolves?
+
+Strong AI workflows combine clear instructions, narrow reusable skills, bounded agent permissions, and observable quality checks.
 
 ---
 
@@ -300,10 +274,10 @@ Before creating a new Markdown artifact, ask:
 
 > If this instruction disappeared, what observable behavior would change?
 
-- If the answer is **everyday conduct across the workspace**, use persistent instructions.
-- If the answer is **this particular request**, use a prompt.
-- If the answer is **a recurring method that multiple tasks need**, use a skill.
-- If the answer is **who can decide, approve, or act**, encode it as a boundary in the agent and process design.
-- If the answer is **what a successful result looks like**, use a specification and evaluation criteria.
+- If it affects everyday conduct across the workspace, use persistent instructions.
+- If it affects one request, use a prompt.
+- If it describes a recurring method, use a skill.
+- If it defines decision authority, encode it as an agent and process boundary.
+- If it defines success, express it in a specification and evaluation criteria.
 
-Clear scope prevents duplicated instructions, contradictory guidance, accidental overreach, and inconsistent results. It also makes the AI system easier to explain, operate, audit, and improve.
+Clear scope reduces duplicated instructions, contradictory guidance, accidental overreach, and inconsistent results. It also makes AI-enabled work easier to explain, operate, audit, and improve.
