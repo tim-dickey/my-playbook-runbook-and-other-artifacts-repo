@@ -245,13 +245,37 @@ The executive sponsor should see evidence in five categories before authorizing 
 | Safety and reversibility | Limited exposure; approved budget cap; monitoring; explicit stop conditions; rollback or pause procedure; and named responders | Build-side, marketing, finance, legal/compliance |
 | Approval and accountability | Required review statuses, open risks, unresolved decisions, and an explicit executive decision record | Executive sponsor and named reviewers |
 
+### Weighted guardrail matrix
+
+Use this matrix to make the safe-to-fail decision explicit and cross-functional. **Technical error rate receives 30% of the total weight** because defects can be disproportionately costly to investigate, correct, and remediate. The remaining 70% is distributed across customer and commercial guardrails.
+
+| Guardrail | Weight | Direction | Example safe-to-fail threshold | Owner | Score (0-5) | Weighted score |
+|---|---:|---|---|---|---:|---:|
+| Customer opt-outs | 20% | Lower is better | Does not exceed baseline by the agreed tolerance | Marketing / lifecycle | [0-5] | `score × 0.20` |
+| Customer complaints | 15% | Lower is better | Does not exceed baseline by the agreed tolerance | Customer experience / legal | [0-5] | `score × 0.15` |
+| Cost per qualified lead | 15% | Lower is better | Remains within the approved cost ceiling | Marketing / finance | [0-5] | `score × 0.15` |
+| Conversion quality | 20% | Higher is better | Meets the agreed quality threshold for qualified actions | Marketing / product / sales | [0-5] | `score × 0.20` |
+| Technical error rate | 30% | Lower is better | Does not exceed the agreed error budget or incident threshold | Build-side / operations | [0-5] | `score × 0.30` |
+| **Total** | **100%** |  |  |  |  | `sum of weighted scores` |
+
+Score each guardrail against a pre-agreed rubric, for example: 5 = comfortably within the threshold; 3 = within threshold but needs monitoring; 1 = near or beyond the threshold; 0 = stop condition met. The weights express priority; they do not override a hard safety stop.
+
+### Decision rules for the matrix
+
+- **Automatic pause or rollback:** Any hard stop condition—such as a privacy, security, legal, or brand-control failure, or a technical error rate beyond its error budget—requires the team to pause or roll back, regardless of the total weighted score.
+- **Proceed within the safe-to-fail limit:** All hard stops are clear, staging is successful, prerequisite approvals are recorded, and the weighted score is at least **80%**.
+- **Adjust and retest:** No hard stop is met, but the weighted score is below **80%** or one or more guardrails score poorly. Reduce exposure, correct the issue, and rerun staging or the limited experiment.
+- **Retest-cycle governance:** Run at least **2** cycles when revision is needed; plan for **3** cycles as the normal target; and do not exceed **5** cycles without an executive-sponsor decision to redesign the experiment, reduce scope, or stop it.
+- **Meaningful learning:** Each retest cycle must document a measurable metric movement, a confirmed technical finding, and/or validated customer feedback, then explain how that evidence changes the next decision. Cosmetic changes alone do not count as a retest cycle.
+- **Scale decision:** The executive sponsor may authorize broader exposure only after reviewing the matrix, evidence limitations, and the accumulated test results.
+
 ### Safe-to-fail experiment example
 
 ```text
 Hypothesis:
 A revised partner message will increase qualified-demo requests for the defined
-segment without increasing opt-outs, complaints, or cost per qualified lead above
-agreed guardrails.
+segment without increasing opt-outs, complaints, cost per qualified lead, or
+technical error rate beyond agreed guardrails, while maintaining conversion quality.
 
 Limited exposure:
 - A pre-approved, small audience segment.
@@ -260,8 +284,8 @@ Limited exposure:
 
 Stop conditions:
 - Privacy, security, legal, or brand-control failure.
-- Guardrail metric exceeds the agreed threshold.
-- Staging or production monitoring shows a material technical problem.
+- Any guardrail reaches its documented hard-stop threshold.
+- Technical error rate exceeds the agreed error budget or incident threshold.
 
 Reversibility:
 - Pause campaign distribution.
@@ -275,31 +299,35 @@ Reversibility:
 | Artifact | Example in the campaign process | Why it belongs there |
 |---|---|---|
 | Persistent instructions | “Do not publish external copy without the executive sponsor’s recorded approval. Preserve claim sources and approval status.” | These are durable controls for all customer-facing work. |
-| Campaign brief / specification | Target audience, offer, campaign channels, budget, timeline, test hypothesis, guardrails, stop conditions, required approvals, prohibited claims, and acceptance criteria | This states the desired business outcome and constraints. |
-| Prompt | “Prepare an executive approval summary from the attached brief, draft copy, staging validation, A/B test results, budget, and evidence register.” | It requests a specific artifact for this campaign. |
+| Campaign brief / specification | Target audience, offer, campaign channels, budget, timeline, test hypothesis, weighted guardrails, stop conditions, required approvals, prohibited claims, and acceptance criteria | This states the desired business outcome and constraints. |
+| Prompt | “Prepare an executive approval summary from the attached brief, draft copy, staging validation, A/B test results, weighted guardrail matrix, budget, and evidence register.” | It requests a specific artifact for this campaign. |
 | Claim-review skill | Extract claims, link evidence, identify approval gaps, and flag regulated or unsupported language | This is a reusable method for repeated campaign reviews. |
-| Experiment-readiness skill | Check hypothesis, audience limit, metrics, instrumentation, staging results, monitoring, stop conditions, rollback plan, and owner assignments | This is a reusable cross-functional method for safe-to-fail experiments. |
-| Agent | Reads approved campaign materials, runs applicable skills, prepares a decision packet, and records unresolved risks | The agent performs bounded preparation and validation work. |
-| Evaluation / checklist | Each claim has evidence, the staging run succeeded, A/B results and limitations are documented, stop conditions are testable, and required reviewers are confirmed | This makes campaign readiness observable and auditable. |
+| Experiment-readiness skill | Check hypothesis, audience limit, weighted guardrails, instrumentation, staging results, monitoring, stop conditions, rollback plan, owner assignments, and meaningful-learning evidence | This is a reusable cross-functional method for safe-to-fail experiments. |
+| Agent | Reads approved campaign materials, runs applicable skills, calculates the matrix from supplied data, prepares a decision packet, and records unresolved risks | The agent performs bounded preparation and validation work. |
+| Evaluation / checklist | Each claim has evidence, the staging run succeeded, A/B results and limitations are documented, the weighted matrix is complete, hard stops are testable, meaningful learning is documented for each retest, and required reviewers are confirmed | This makes campaign readiness observable and auditable. |
 | Final approval | Executive sponsor records approve, reject, or request-changes decision after prerequisite reviews | A named accountable person retains final decision authority. |
 
 ### Example workflow
 
 ```text
 1. Marketing and product define the business hypothesis, audience, success metrics,
-   guardrails, budget cap, and decision thresholds.
+   weighted guardrails, budget cap, hard stops, and decision thresholds.
 2. The build-side implements the limited experiment and required instrumentation in staging.
 3. Marketing operations and the build-side execute a staging run and record results.
 4. The team conducts the limited A/B test or other controlled experiment.
 5. The agent reads standing instructions and campaign evidence, then runs the
    claim-review and experiment-readiness skills.
-6. The agent prepares an approval packet containing evidence, findings, limitations,
-   risks, stop conditions, rollback readiness, and a recommendation.
+6. The agent completes the weighted matrix from the approved data and prepares an
+   approval packet containing evidence, findings, limitations, risks, stop conditions,
+   rollback readiness, and a recommendation.
 7. Marketing, product, finance, legal/compliance, analytics, and the build-side
    provide required review input.
-8. The executive sponsor records the final approve, reject, or request-changes decision.
-9. The agent records the decision and prepares only approved materials for publication.
-10. The team monitors the launch against guardrails and uses the documented pause or
+8. The executive sponsor reviews the hard-stop status and weighted matrix, then records
+   the final approve, reject, or request-changes decision.
+9. If revision is required, the team documents meaningful learning and repeats the
+   controlled experiment under the 2-minimum, 3-target, 5-maximum cycle policy.
+10. The agent records the decision and prepares only approved materials for publication.
+11. The team monitors the launch against guardrails and uses the documented pause or
     rollback procedure if a stop condition is met.
 ```
 
@@ -321,13 +349,32 @@ Executive sponsor: approve, reject, or request changes to the partner campaign o
 ## Hypothesis and measures
 - Hypothesis: [falsifiable statement]
 - Primary success metric: [metric and threshold]
-- Guardrail metrics: [metrics and thresholds]
+- Guardrail metrics: customer opt-outs, complaints, cost per qualified lead,
+  conversion quality, and technical error rate
 - Test duration and decision date: [dates]
+
+## Weighted guardrail matrix
+| Guardrail | Weight | Actual result | Score (0-5) | Weighted score | Hard-stop status | Owner |
+|---|---:|---|---:|---:|---|---|
+| Customer opt-outs | 20% | [Value] | [0-5] | [Score × 0.20] | [Clear / Stop] | [Name] |
+| Customer complaints | 15% | [Value] | [0-5] | [Score × 0.15] | [Clear / Stop] | [Name] |
+| Cost per qualified lead | 15% | [Value] | [0-5] | [Score × 0.15] | [Clear / Stop] | [Name] |
+| Conversion quality | 20% | [Value] | [0-5] | [Score × 0.20] | [Clear / Stop] | [Name] |
+| Technical error rate | 30% | [Value] | [0-5] | [Score × 0.30] | [Clear / Stop] | [Name] |
+| **Total** | **100%** |  |  | **[Sum]** |  |  |
 
 ## A/B test or experiment results
 | Measure | Control | Treatment | Interpretation | Limitation / next action |
 |---|---|---|---|---|
 | [Metric] | [Value] | [Value] | [Finding] | [Limitation or action] |
+
+## Meaningful-learning record
+- Retest cycle: [1-5]
+- What changed: [specific intervention]
+- Metric movement: [measured change or no material change]
+- Confirmed technical finding: [finding or not applicable]
+- Validated customer feedback: [evidence or not applicable]
+- Learning and next decision: [proceed / revise / narrow exposure / stop]
 
 ## Required-review status
 | Review area | Accountable reviewer | Status | Material finding |
@@ -364,7 +411,7 @@ Executive sponsor: approve, reject, or request changes to the partner campaign o
 
 ### Control boundary
 
-The agent may summarize, compare, flag, and prepare. It must not infer that A/B results prove a causal conclusion beyond the evidence, silently approve claims, alter budget authority, invent evidence, or publish externally unless the process explicitly grants that permission and the executive sponsor’s final approval plus all required prerequisite approvals are recorded.
+The agent may summarize, compare, flag, and calculate the documented weighted score from supplied data. It must not infer that A/B results prove a causal conclusion beyond the evidence, override hard-stop conditions with a high weighted score, silently approve claims, alter budget authority, invent evidence, or publish externally unless the process explicitly grants that permission and the executive sponsor’s final approval plus all required prerequisite approvals are recorded.
 
 ---
 
